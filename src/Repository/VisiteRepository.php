@@ -70,4 +70,13 @@ class VisiteRepository extends ServiceEntityRepository
         $this->getEntityManager()->flush();      
     }
     
+    public function derniersVoyages($champ, $ordre): array 
+    {
+        return $this->createQueryBuilder('v')
+                ->orderBy('v.'.$champ, $ordre)
+                ->setMaxResults(2)
+                ->getQuery()
+                ->getResult();
+        
+    }
 }
