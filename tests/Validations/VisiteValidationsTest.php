@@ -29,20 +29,36 @@ class VisiteValidationsTest extends KernelTestCase {
     }
     
     public function testValidNoteVisite() {
-        $visite = $this->getVisite()->setNote(10);
-        $this->assertErrors($visite, 0);
+        $visite = $this->getVisite();
+        $this->assertErrors($visite->setNote(10), 0);
+        $this->assertErrors($visite->setNote(0), 0);
+        $this->assertErrors($visite->setNote(20), 0);
+
     }
     
     public function testNonValidNoteVisite() {
-        $visite = $this->getVisite()->setNote(21);
-        $this->assertErrors($visite, 1);
+        $visite = $this->getVisite();
+        $this->assertErrors($visite->setNote(21), 1);
+        $this->assertErrors($visite->setNote(-1), 1);
+        $this->assertErrors($visite->setNote(25), 1);
+        $this->assertErrors($visite->setNote(-5), 1);
     }
+    public function testValidTempmaxVisite() {
+        $visite = $this->getVisite()
+                ->setTempmin(20)
+                ->setTempmax(22);
+        $this->assertErrors($visite, 0);
+        $this->assertErrors($visite->setTempmin(21), 0);
+    }
+    
     
     public function testNonValidTempmaxVisite() {
         $visite = $this->getVisite()
                 ->setTempmin(22)
                 ->setTempmax(20);
-        $this->assertErrors($visite, 1, "min=20, max=18 devrait échouer");
+        $this->assertErrors($visite, 1);
+        $this->assertErrors($visite->setTempmin(20), 1);
+
     }
     
     
