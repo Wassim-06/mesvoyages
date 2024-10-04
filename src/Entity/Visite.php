@@ -31,6 +31,11 @@ class Visite
     private ?\DateTimeInterface $datecreation = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Range(
+            min: 0,
+            max: 20,
+            notInRangeMessage: 'Vous devez insérer une note entre {{ min }} et {{ max }}. Réessayer'
+    )]
     private ?int $note = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -40,6 +45,7 @@ class Visite
     private ?int $tempmin = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\GreaterThan(propertyPath:"tempmin")]
     private ?int $tempmax = null;
     
     #[Vich\UploadableField(mapping: 'visites', fileNameProperty: 'imageName', size: 'imageSize')]
