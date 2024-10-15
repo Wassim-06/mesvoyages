@@ -7,8 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -28,14 +28,11 @@ class Visite
     private ?string $pays = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[Assert\LessThanOrEqual("now")]
     private ?\DateTimeInterface $datecreation = null;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\Range(
-            min: 0,
-            max: 20,
-            notInRangeMessage: 'Vous devez insérer une note entre {{ min }} et {{ max }}. Réessayer'
-    )]
+    #[Assert\Range(min: 0, max: 20)]
     private ?int $note = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -45,40 +42,21 @@ class Visite
     private ?int $tempmin = null;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\GreaterThan(propertyPath:"tempmin")]
+    #[ Assert\GreaterThan(propertyPath:"tempmin")]
     private ?int $tempmax = null;
-    
+
     #[Vich\UploadableField(mapping: 'visites', fileNameProperty: 'imageName', size: 'imageSize')]
     private ?File $imageFile = null;
-    
+
     #[ORM\Column(nullable: true)]
     private ?string $imageName = null;
-    
+
     #[ORM\Column(nullable: true)]
     private ?int $imageSize = null;
-    
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updatedAt = null;
-    
-       #[Assert\Callback]
-    public function validate(ExecutionContextInterface $context) {
-        $file = $this->getImageFile();
-        if($file != null && $file != ""){
-            $poids = @filesize($file);
-            if($poids != false && $poids > 512000){
-                $context->buildViolation("Cette image est trop lourde (500Ko max stp)")
-                        ->atPath('imageFile')
-                        ->addViolation();
-            }
-            $infosImage = @getimagesize($file);
-            if($infosImage == false){
-                $context->buildViolation("Ce fichier n'est pas une image")
-                        ->atPath('imageFile')
-                        ->addViolation();
-            }
-        }
-    }
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;    
+    
     /**
      * @var Collection<int, Environnement>
      */
@@ -123,6 +101,13 @@ class Visite
     {
         return $this->datecreation;
     }
+
+    public function setDatecreation(?\DateTimeInterface $datecreation): static
+    {
+        $this->datecreation = $datecreation;
+
+        return $this;
+    }
     
     public function getDatecreationString(): string
     {
@@ -131,14 +116,6 @@ class Visite
         }else{
             return $this->datecreation->format('d/m/Y');
         }
-        
-    }
-
-    public function setDatecreation(?\DateTimeInterface $datecreation): static
-    {
-        $this->datecreation = $datecreation;
-
-        return $this;
     }
 
     public function getNote(): ?int
@@ -213,7 +190,6 @@ class Visite
         return $this;
     }
     
-    
     public function getImageFile(): ?File {
         return $this->imageFile;
     }
@@ -241,6 +217,23 @@ class Visite
         $this->imageSize = $imageSize;
     }
     
- 
-    
+    #[Assert\Callback]
+    public function validate(ExecutionContextInterface $context){
+        $file = $this->getImageFile();
+        if($file != null && $file != ""){
+            $poids = @filesize($file);
+            if($poids != false && $poids > 512000){
+                $context->buildViolation("Cette image est trop lourde (500Ko max)")
+                        ->atPath('imageFile')
+                        ->addViolation();
+            }
+            $infosImage = @getimagesize($file);
+            if($infosImage == false){
+                $context->buildViolation("Ce fichier n'est pas une image")
+                        ->atPath('imageFile')
+                        ->addViolation();
+            }
+        }
+    }
+
 }

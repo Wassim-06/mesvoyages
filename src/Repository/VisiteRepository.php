@@ -8,6 +8,11 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Visite>
+ *
+ * @method Visite|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Visite|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Visite[]    findAll()
+ * @method Visite[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class VisiteRepository extends ServiceEntityRepository
 {
@@ -15,6 +20,28 @@ class VisiteRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Visite::class);
     }
+
+    /**
+     * Supprime une visite
+     * @param Visite $visite
+     * @return void
+     */
+    public function remove(Visite $visite): void
+    {
+        $this->getEntityManager()->remove($visite);
+        $this->getEntityManager()->flush();
+    }    
+    
+    /**
+     * Ajoute ou modifie une visite
+     * @param Visite $visite
+     * @return void
+     */
+    public function add(Visite $visite): void
+    {
+        $this->getEntityManager()->persist($visite);
+        $this->getEntityManager()->flush();
+    }    
     
     /**
      * Retourne toutes les visites triées sur un champ
@@ -28,55 +55,40 @@ class VisiteRepository extends ServiceEntityRepository
                 ->getQuery()
                 ->getResult();
     }
+
     /**
-     * 
+     * Retourne les visites dont un champ est égal à une valeur
      * @param type $champ
      * @param type $valeur
      * @return Visite[]
      */
     public function findByEqualValue($champ, $valeur): array{
         if($valeur==""){
-            return $this->createQueryBuilder('v') //alias de la table
+            return $this->createQueryBuilder('v')
                     ->orderBy('v.'.$champ, 'ASC')
                     ->getQuery()
-                    ->getResult();
+                    ->getResult();            
         }else{
-            return $this->createQueryBuilder('v') //alias de la table
+            return $this->createQueryBuilder('v')
                     ->where('v.'.$champ.'=:valeur')
                     ->setParameter('valeur', $valeur)
                     ->orderBy('v.datecreation', 'DESC')
                     ->getQuery()
-                    ->getResult();
+                    ->getResult();                   
         }
     }
-    /**
-     * Supprime une visite
-     * @param Visite $visite
-     * @return void
-     */
-    public function remove(Visite $visite): void{
-        $this->getEntityManager()->remove($visite);
-        $this->getEntityManager()->flush();        
-    }
     
     /**
-     * Ajoute une visite
-     * @param Visite $visite
-     * @return void
+     * Retourne les n visites les plus récentes
+     * @param type $nb
+     * @return Visite[]
      */
-    public function add(Visite $visite): void
-    {
-        $this->getEntityManager()->persist($visite);
-        $this->getEntityManager()->flush();      
+    public function findAllLasted($nb) : array {
+        return $this->createQueryBuilder('v') // alias de la table
+           ->orderBy('v.datecreation', 'DESC')
+           ->setMaxResults($nb)     
+           ->getQuery()
+           ->getResult();
     }
     
-    public function derniersVoyages($champ, $ordre): array 
-    {
-        return $this->createQueryBuilder('v')
-                ->orderBy('v.'.$champ, $ordre)
-                ->setMaxResults(2)
-                ->getQuery()
-                ->getResult();
-        
-    }
 }

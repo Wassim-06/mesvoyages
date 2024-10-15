@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Controller;
 
 use App\Entity\Contact;
@@ -14,17 +13,18 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Description of ContactController
  *
- * @author wassi
+ * @author emds
  */
 class ContactController extends AbstractController {
+
     #[Route('/contact', name: 'contact')]
-    public function index(Request $request, MailerInterface $mailer): Response 
-    {
+    public function index(Request $request, MailerInterface $mailer): Response {
         $contact = new Contact();
         $formContact = $this->createForm(ContactType::class, $contact);
         $formContact->handleRequest($request);
+        
         if($formContact->isSubmitted() && $formContact->isValid()){
-            //envoie du mail
+            // envoi du mail
             $this->sendEmail($mailer, $contact);
             $this->addFlash('succes', 'message envoyé');
             return $this->redirectToRoute('contact');
@@ -36,7 +36,7 @@ class ContactController extends AbstractController {
         ]);
     }
     
-    public function sendEmail(MailerInterface $mailer, Contact $contact) {
+    public function sendEmail(MailerInterface $mailer, Contact $contact){
         $email = (new Email())
             ->from($contact->getEmail())
             ->to('contact@mesvoyages.com')
@@ -51,4 +51,5 @@ class ContactController extends AbstractController {
         ;
         $mailer->send($email);
     }
+    
 }

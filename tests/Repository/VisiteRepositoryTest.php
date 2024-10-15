@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Tests\Repository;
 
 use App\Entity\Visite;
@@ -9,48 +8,48 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 /**
  * Description of VisiteRepositoryTest
  *
- * @author wassi
+ * @author emds
  */
 class VisiteRepositoryTest extends KernelTestCase{
-    
-    public function newVisite(): Visite {
-        $visite = new Visite;
-        $visite->setVille("New York")
-                ->setPays("USA")
-                ->setDatecreation(new \DateTime("now"));
-       return $visite;
-    }
     
     public function recupRepository(): VisiteRepository{
         self::bootKernel();
         $repository = self::getContainer()->get(VisiteRepository::class);
         return $repository;
     }
-    
-    public function testNbVisites() {
+
+    public function newVisite(): Visite {
+        $visite = (new Visite())
+                ->setVille("New York")
+                ->setPays("USA")
+                ->setDatecreation(new \DateTime("now"));
+        return $visite;
+    }
+
+    public function testNbVisites(){
         $repository = $this->recupRepository();
         $nbVisites = $repository->count([]);
         $this->assertEquals(2, $nbVisites);
     }
     
-    public function testAddVisite() {
+    public function testAddVisite(){
         $repository = $this->recupRepository();
         $visite = $this->newVisite();
-        $nbvisites = $repository->count([]);
+        $nbVisites = $repository->count([]);
         $repository->add($visite, true);
-        $this->assertEquals($nbvisites + 1, $repository->count([]), "erreur  lors de l'ajout");
+        $this->assertEquals($nbVisites + 1, $repository->count([]), "erreur lors de l'ajout");
     }
     
-    public function testRemoveVisite() {
+    public function testRemoveVisite(){
         $repository = $this->recupRepository();
         $visite = $this->newVisite();
         $repository->add($visite, true);
-        $nbvisites = $repository->count([]);
+        $nbVisites = $repository->count([]);
         $repository->remove($visite, true);
-        $this->assertEquals($nbvisites - 1, $repository->count([]), "erreur  lors de la suppression");
+        $this->assertEquals($nbVisites - 1, $repository->count([]), "erreur lors de la suppression");        
     }
     
-    public function testFindByEqualValue() {
+    public function testFindByEqualValue(){
         $repository = $this->recupRepository();
         $visite = $this->newVisite();
         $repository->add($visite, true);

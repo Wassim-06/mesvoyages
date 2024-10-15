@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Controller;
 
 use App\Repository\VisiteRepository;
@@ -11,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Description of VoyagesController
  *
- * @author wassi
+ * @author emds
  */
 class VoyagesController extends AbstractController {
     
@@ -28,35 +27,41 @@ class VoyagesController extends AbstractController {
     public function __construct(VisiteRepository $repository) {
         $this->repository = $repository;
     }
-
-    
-    
     
     #[Route('/voyages', name: 'voyages')]
-    public function Index(): Response{
+    public function index(): Response {
         $visites = $this->repository->findAllOrderBy('datecreation', 'DESC');
-        return $this->render("pages/voyages.html.twig", ['visites' => $visites]);
-    }
+        return $this->render("pages/voyages.html.twig", [
+            'visites' => $visites
+        ]);
+    }   
     
     #[Route('/voyages/tri/{champ}/{ordre}', name: 'voyages.sort')]
     public function sort($champ, $ordre): Response{
         $visites = $this->repository->findAllOrderBy($champ, $ordre);
-        return $this->render("pages/voyages.html.twig", ['visites' => $visites]);
+        return $this->render("pages/voyages.html.twig", [
+            'visites' => $visites
+        ]);
     }
     
-    #[Route('/voyages/filtre/{champ}', name: 'voyages.findallequal')]
+    #[Route('/voyages/recherche/{champ}', name: 'voyages.findallequal')]
     public function findAllEqual($champ, Request $request): Response{
         if($this->isCsrfTokenValid('filtre_'.$champ, $request->get('_token'))){
             $valeur = $request->get("recherche");
             $visites = $this->repository->findByEqualValue($champ, $valeur);
-            return $this->render("pages/voyages.html.twig", ['visites' => $visites]);
+            return $this->render("pages/voyages.html.twig", [
+                'visites' => $visites
+            ]);
         }
         return $this->redirectToRoute("voyages");
-    }
+    }    
     
     #[Route('/voyages/voyage/{id}', name: 'voyages.showone')]
     public function showOne($id): Response{
         $visite = $this->repository->find($id);
-        return $this->render("pages/voyage.html.twig", ['visite' => $visite]);
+        return $this->render("pages/voyage.html.twig", [
+            'visite' => $visite
+        ]);
     }
+    
 }

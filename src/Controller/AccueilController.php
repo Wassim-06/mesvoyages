@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Controller;
 
 use App\Repository\VisiteRepository;
@@ -10,30 +9,29 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Description of AccueilController
  *
- * @author wassi
+ * @author emds
  */
-
-class AccueilController extends AbstractController{
+class AccueilController extends AbstractController {
     
     /**
-     * 
+     *
      * @var VisiteRepository
      */
     private $repository;
-    
+
     /**
      * 
      * @param VisiteRepository $repository
      */
     public function __construct(VisiteRepository $repository) {
         $this->repository = $repository;
-    }
+    }    
     
     #[Route('/', name: 'accueil')]
-    public function Index(): Response{
-        $visites = $this->repository->derniersVoyages('datecreation', 'DESC');
-        return $this->render("pages/accueil.html.twig", ['visites' => $visites]);
+    public function index(): Response {
+        $visites = $this->repository->findAllLasted(2);
+        return $this->render("pages/accueil.html.twig", [
+            'visites' => $visites
+        ]);
     }
-    
-    
 }

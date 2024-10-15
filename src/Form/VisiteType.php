@@ -9,7 +9,6 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -27,26 +26,26 @@ class VisiteType extends AbstractType
                     $options['data']->getDateCreation() != null ? $options['data']->getDateCreation() : new DateTime('now'),
                 'label' => 'date'
             ])
-            ->add('note', IntegerType::class, [
+            ->add('note', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'attr' => [
                     'min' => 0,
                     'max' => 20
                 ]
             ])
             ->add('avis')
-            ->add('tempmin', null,[
+            ->add('tempmin', null, [
                 'label' => 't° min'
             ])
-            ->add('tempmax', null,[
+            ->add('tempmax', null, [
                 'label' => 't° max'
             ])
-            ->add('environnements', EntityType::class,[
+            ->add('environnements', EntityType::class, [
                 'class' => Environnement::class,
                 'choice_label' => 'nom',
-                'multiple' =>  true,
+                'multiple' => true,
                 'required' => false
             ])
-            ->add('imageFile', FileType::class,[
+            ->add('imageFile', FileType::class, [
                 'required' => false,
                 'label' => 'sélection image'
             ])
