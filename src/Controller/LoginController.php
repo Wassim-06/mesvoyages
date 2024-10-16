@@ -22,6 +22,6 @@ class LoginController extends AbstractController
     
     #[Route('/logout', name: 'logout')]
     public function logout($param) {
-        
+        // Fonction pour se déconnecter
     }  
 }
